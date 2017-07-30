@@ -1,4 +1,5 @@
-build.gradle
+.gradle
+build
 ### STS ###
 .apt_generated
 .classpath
