@@ -1,11 +1,25 @@
 <!DOCTYPE html>
-<html  xmlns="http://www.w3.org/1999/xhtml"
-       xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head lang="pl">
     <meta charset="UTF-8"/>
     <title>Witaj w Thymeleaf!</title>
+    <link href="/webjars/materializecss/0.99.0/css/materialize.css" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 <body>
-<span th:text="${message}">Witaj w HTML</span>
+<div class="row">
+    <h2 class="indigo-text center" th:text="|Wyniki wyszukiwania ${search}|">Search</h2>
+    <ul class="collection">
+        <li class="collection-item avatar" th:each="tweet : ${tweets}">
+            <img th:src="${tweet.user.profileImageUrl}" alt="" class="circle"/>
+            <span class="title" th:text="${tweet.user.name}">User</span>
+            <p th:text="${tweet.text}">Text</p>
+        </li>
+    </ul>
+</div>
+<script src="/webjars/jquery/3.2.1/js/jquery.js"/>
+<script src="/webjars/materializecss/0.99.0/js/materialize.js"/>
 </body>
 </html>
