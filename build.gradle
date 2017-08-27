@@ -29,5 +29,6 @@ dependencies {
 	compile 'org.springframework.boot:spring-boot-starter-social-twitter'
 	compile 'org.webjars:materializecss:0.99.0'
 	compile 'org.webjars:jquery:3.2.1'
+	compile 'org.projectlombok:lombok:1.16.18'
 	testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
