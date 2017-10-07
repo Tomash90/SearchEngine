@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head lang="pl">
+    <meta charset="UTF-8"/>
+    <title th:text="${status}">404!</title>
+    <link href="/webjars/materializecss/0.99.0/css/materialize.css" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+</head>
+<body>
+<div class="row">
+    <h2 class="indigo-text center" th:text="#{error}">Strona nie istnieje</h2>
+    <p class="col s12 center" th:text="${message}">Żądana strona nie istnieje</p>
+</div>
+</body>
+</html>
