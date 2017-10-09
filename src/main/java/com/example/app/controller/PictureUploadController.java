@@ -1,6 +1,7 @@
 package com.example.app.controller;
 
 import com.example.app.config.PictureUploadProperties;
+import com.example.app.profile.UserProfileSession;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -22,18 +23,19 @@ import java.nio.file.Paths;
 import java.util.Locale;
 
 @Controller
-@SessionAttributes("picturePath")
 public class PictureUploadController {
 
     private final Resource imageDir;
     private final Resource anonymousPicture;
     private final MessageSource messageSource;
+    private UserProfileSession userProfileSession;
 
     @Autowired
-    public PictureUploadController(PictureUploadProperties pictureUploadProperties, MessageSource messageSource){
-        imageDir = pictureUploadProperties.getUploadPath();
-        anonymousPicture = pictureUploadProperties.getAnonymousPicture();
+    public PictureUploadController(PictureUploadProperties pictureUploadProperties, MessageSource messageSource, UserProfileSession userProfileSession){
+        this.imageDir = pictureUploadProperties.getUploadPath();
+        this.anonymousPicture = pictureUploadProperties.getAnonymousPicture();
         this.messageSource = messageSource;
+        this.userProfileSession = userProfileSession;
     }
 
     @RequestMapping("upload")
@@ -41,15 +43,15 @@ public class PictureUploadController {
         return "profile/uploadPage";
     }
 
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    @RequestMapping(value = "/profile", params = {"upload"}, method = RequestMethod.POST)
     public String onUpload(MultipartFile file, RedirectAttributes redirectAttributes, Model model) throws IOException {
-        if(file.isEmpty()|| !isImage(file)){
+        if(file.isEmpty() || !isImage(file)){
             redirectAttributes.addFlashAttribute("error", messageSource.getMessage("upload.file.bad.format",null,Locale.getDefault()));
-            return "redirect:/upload";
+            return "redirect:/profile";
         }
         Resource picturePath = copyFileToImages(file);
-        model.addAttribute("picturePath", picturePath);
-        return "profile/uploadPage";
+        userProfileSession.setPicturePath(picturePath);
+        return "redirect:profile";
     }
 
     private Resource copyFileToImages(MultipartFile file) throws IOException {
@@ -64,9 +66,13 @@ public class PictureUploadController {
     }
 
     @RequestMapping(value = "/uploadImage")
-    public void getUploadImage(@ModelAttribute("picturePath") Resource imagePath, HttpServletResponse httpServletResponse) throws IOException {
-        httpServletResponse.setHeader("Content-Type", URLConnection.guessContentTypeFromName(imagePath.toString()));
-        Path path= Paths.get(imagePath.getURI());
+    public void getUploadImage(HttpServletResponse httpServletResponse) throws IOException {
+        Resource picturePath = userProfileSession.getPicturePath();
+        if(picturePath == null){
+            picturePath = anonymousPicture;
+        }
+        httpServletResponse.setHeader("Content-Type", URLConnection.guessContentTypeFromName(picturePath.toString()));
+        Path path= Paths.get(picturePath.getURI());
         Files.copy(path, httpServletResponse.getOutputStream());
     }
 
