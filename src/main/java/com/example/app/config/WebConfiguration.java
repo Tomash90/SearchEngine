@@ -18,10 +18,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.util.UrlPathHelper;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.time.LocalDate;
 
 @Configuration
+@EnableSwagger2
 public class WebConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
@@ -66,5 +70,11 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         ObjectMapper objectMapper = builder.createXmlMapper(false).build();
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,false);
         return objectMapper;
+    }
+
+    @Bean
+    public Docket userApi() {
+        return new Docket(DocumentationType.SWAGGER_2).select().paths(path -> path.startsWith("/api/"))
+                .build();
     }
 }

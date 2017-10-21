@@ -1,8 +1,11 @@
 package com.example.app.user.api;
 
+import com.example.app.error.EntityNotFoundException;
 import com.example.app.user.User;
 import com.example.app.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,17 +26,23 @@ public class UserApiController {
     }
 
     @RequestMapping(value = "/users", method =RequestMethod.POST)
-    public User createUser(@RequestBody User user){
-        return userRepository.save(user);
+    public ResponseEntity<User> createUser(@RequestBody User user){
+        HttpStatus httpStatus = HttpStatus.OK;
+        if(!userRepository.exists(user.getEmail()))
+            httpStatus = HttpStatus.CREATED;
+        User saved = userRepository.save(user);
+        return new ResponseEntity<>(saved, httpStatus);
     }
 
     @RequestMapping(value = "/users/{email}", method = RequestMethod.PUT)
-    public User updateUser(@PathVariable String email, @RequestBody User user){
-        return userRepository.save(email, user);
+    public ResponseEntity<User> updateUser(@PathVariable String email, @RequestBody User user) throws EntityNotFoundException {
+        User updated = userRepository.update(email, user);
+        return new ResponseEntity<>(updated,HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/user/{email}", method = RequestMethod.DELETE)
-    public void deleteUser(@PathVariable String email){
+    public ResponseEntity<User> deleteUser(@PathVariable String email) throws EntityNotFoundException {
         userRepository.delete(email);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
