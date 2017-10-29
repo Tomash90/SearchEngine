@@ -25,13 +25,15 @@
         </ul>
     </div>
 </nav>
-<div>
-    You are logged as
-    <b sec:authentication="name"/> and roles <span sec:authentication="authorities"/>-
-    <form th:action="@{/logout}" method="post" style="display: inline-block">
-        <input type="submit" value="Logout"/>
-    </form>
-    <hr/>
+<div sec:authorize="isAuthenticated()">
+    <div>
+        You are logged as
+        <b sec:authentication="name"/> and roles <span sec:authentication="authorities"/>-
+        <form th:action="@{/logout}" method="post" style="display: inline-block">
+            <input type="submit" value="Logout"/>
+        </form>
+        <hr/>
+    </div>
 </div>
 <section layout:fragment="content">
     <p>Page content</p>
@@ -40,6 +42,7 @@
 <script src="/webjars/materializecss/0.99.0/js/materialize.js"/>
 <script type="text/javascript">
     $(".dropdown-button").dropdown();
+
 </script>
 </body>
 </html>
