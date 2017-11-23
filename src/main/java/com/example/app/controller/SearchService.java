@@ -1,7 +1,11 @@
 package com.example.app.controller;
 
+import com.example.app.search.SearchParamsBuilder;
+import com.example.app.search.TwitterSearch;
 import com.example.app.search.api.LightTweet;
+import com.example.app.search.cache.SearchCache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.social.twitter.api.SearchParameters;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
@@ -11,36 +15,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class SearchService {
-    private Twitter twitter;
+@Profile("!async")
+public class SearchService implements TwitterSearch {
+    private SearchCache searchCache;
 
     @Autowired
-    public SearchService(Twitter twitter){
-        this.twitter = twitter;
+    public SearchService(SearchCache searchCache) {
+        this.searchCache = searchCache;
     }
 
+    @Override
     public List<LightTweet> search(String searchType, List<String> keywords){
-        List<SearchParameters> searches = keywords.stream().map(taste -> createSearchParam(searchType, taste)).collect(Collectors.toList());
-        List<LightTweet> tweets = searches.stream().map(params -> twitter.searchOperations().search(params))
-                .flatMap(searchResults -> searchResults.getTweets().stream()).map(LightTweet::ofTweet)
+        return keywords.stream()
+                .flatMap(keyword -> searchCache.fetch(searchType,keyword).stream())
                 .collect(Collectors.toList());
-        return tweets;
-    }
-
-    private SearchParameters.ResultType getResultType(String searchType){
-        for(SearchParameters.ResultType knowType : SearchParameters.ResultType.values()){
-            if(knowType.name().equalsIgnoreCase(searchType)){
-                return knowType;
-            }
-        }
-        return SearchParameters.ResultType.RECENT;
-    }
-
-    private SearchParameters createSearchParam(String searchType,String taste){
-        SearchParameters.ResultType resultType = getResultType(searchType);
-        SearchParameters searchParameters = new SearchParameters(taste);
-        searchParameters.resultType(resultType);
-        searchParameters.count(3);
-        return searchParameters;
     }
 }

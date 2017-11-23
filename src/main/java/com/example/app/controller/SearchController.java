@@ -1,5 +1,6 @@
 package com.example.app.controller;
 
+import com.example.app.search.TwitterSearch;
 import com.example.app.search.api.LightTweet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.twitter.api.Tweet;
@@ -14,10 +15,10 @@ import java.util.List;
 @Controller
 public class SearchController {
 
-    private SearchService searchService;
+    private TwitterSearch searchService;
 
     @Autowired
-    public SearchController(SearchService searchService) {
+    public SearchController(TwitterSearch searchService) {
         this.searchService = searchService;
     }
     @RequestMapping("/search/{searchType}")

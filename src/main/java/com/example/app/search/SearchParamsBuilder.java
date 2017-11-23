@@ -1,0 +1,23 @@
+package com.example.app.search;
+
+import org.springframework.social.twitter.api.SearchParameters;
+
+public class SearchParamsBuilder {
+
+    public static SearchParameters.ResultType getResultType(String searchType){
+        for(SearchParameters.ResultType knowType : SearchParameters.ResultType.values()){
+            if(knowType.name().equalsIgnoreCase(searchType)){
+                return knowType;
+            }
+        }
+        return SearchParameters.ResultType.RECENT;
+    }
+
+    public static SearchParameters createSearchParam(String searchType,String taste){
+        SearchParameters.ResultType resultType = getResultType(searchType);
+        SearchParameters searchParameters = new SearchParameters(taste);
+        searchParameters.resultType(resultType);
+        searchParameters.count(3);
+        return searchParameters;
+    }
+}
